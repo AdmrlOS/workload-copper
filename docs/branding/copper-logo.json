@@ -1,0 +1,12 @@
+{
+  "asset": "www/assets/copper-logo.webp",
+  "source_url": "https://images.squarespace-cdn.com/content/v1/66a02354cb746f3329f82ce8/d4000caa-5d01-4167-b496-03fc989ff248/logo+tour%C3%A9.png?format=1500w",
+  "supplied_by": "repository owner for Copper demo branding",
+  "retrieved_local_date": "2026-10-28",
+  "response_format": "image/webp",
+  "width": 1000,
+  "height": 1000,
+  "bytes": 27922,
+  "sha256": "277380eeaffcfa4ffb5429b15281eff9caa2c799ebe2d8548437f57980d3bffc",
+  "preservation": "Original downloaded bytes. No cropping, recolouring, filters or redraw. Locally packaged for offline UI use."
+}

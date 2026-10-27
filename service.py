@@ -262,11 +262,13 @@ def make_server(state, recordings, web_root, host="0.0.0.0", port=8080):
                         shutil.copyfileobj(archive, self.wfile)
                     return
                 name = "index.html" if path == "/" else path.removeprefix("/")
-                if name not in {"index.html", "app.js", "model.js", "style.css"}:
+                if name not in {"index.html", "app.js", "model.js", "style.css", "assets/copper-logo.webp"}:
                     return self.json_response(404, dict(error="not found"))
                 content = (web_root / name).read_bytes()
                 content_type = mimetypes.guess_type(name)[0] or "application/octet-stream"
-                self.response_headers(200, content_type + "; charset=utf-8", len(content))
+                if not content_type.startswith("image/"):
+                    content_type += "; charset=utf-8"
+                self.response_headers(200, content_type, len(content))
                 self.end_headers()
                 self.wfile.write(content)
             except (BrokenPipeError, ConnectionResetError, TimeoutError):
