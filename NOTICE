@@ -1,0 +1,10 @@
+Copper × Admiral Autonomy Demo
+Copyright 2026 Admiral
+
+This workload uses Copper (cu29), Copyright the Copper contributors,
+licensed under Apache License 2.0.
+Upstream: https://github.com/copper-project/copper-rs
+The warehouse-rover scenario and browser dashboard are original integration code,
+not an upstream Copper community-showcase application.
+
+Dependency versions and checksums are recorded in Cargo.lock.

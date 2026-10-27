@@ -1,0 +1,19 @@
+(
+    logging: (
+        enable_task_logging: true,
+        slab_size_mib: 8,
+        section_size_mib: 1,
+        keyframe_interval: 100,
+    ),
+    tasks: [
+        (id: "sensor", type: "crate::tasks::SimSensors", run_in_sim: true),
+        (id: "planner", type: "crate::tasks::Navigator", run_in_sim: true),
+        (id: "controller", type: "crate::tasks::SafetyController", run_in_sim: true),
+        (id: "telemetry", type: "crate::tasks::TelemetrySink", run_in_sim: true),
+    ],
+    cnx: [
+        (src: "sensor", dst: "planner", msg: "crate::model::Sensor"),
+        (src: "planner", dst: "controller", msg: "crate::model::Plan"),
+        (src: "controller", dst: "telemetry", msg: "crate::model::Frame"),
+    ],
+)

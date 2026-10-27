@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#141719">
+  <meta name="description" content="Local mission control for a Copper autonomous rover simulation. Live native telemetry and verified record/replay.">
+  <title>Copper × Admiral — Rover mission control</title>
+
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to mission control</a>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Copper and Admiral mission control">
+      <svg class="copper-mark" viewBox="0 0 32 36" fill="none" aria-hidden="true"><path d="M16 2 30 10v16L16 34 2 26V10L16 2Z" stroke="currentColor" stroke-width="2.2"/><path d="m23 14-7-4-7 4v8l7 4 7-4M16 18l14-8M16 18v16M16 18 2 10" stroke="currentColor" stroke-width="2.2"/></svg>
+      <span class="wordmark">copper</span><span class="brand-cross">×</span>
+      <span class="admiral-wordmark"><svg viewBox="0 0 20 21" fill="none" aria-hidden="true"><path d="m2 18 8-15 8 15M6 11h8M5 18h10" stroke="currentColor" stroke-width="1.7"/></svg>admiral</span>
+    </a>
+    <div class="topbar-context"><span class="context-divider"></span><span>WORKLOAD CONSOLE</span></div>
+    <div class="topbar-right"><span class="local-label">LOCAL RUNTIME</span><span id="connection" class="status-pill" data-state="connecting"><span class="status-dot"></span><span id="connection-label">Connecting</span></span></div>
+  </header>
+
+  <main id="main">
+    <section class="page-heading" aria-labelledby="page-title">
+      <div><p class="eyebrow"><span class="small-square"></span> AUTONOMOUS SYSTEMS <span class="slash">/</span> ROVER</p><h1 id="page-title">Mission control<span class="title-period">.</span></h1><p class="page-description">Native telemetry & verified control-loop replay.</p></div>
+      <div class="mode-switch" role="group" aria-label="Telemetry source"><button id="live-mode" class="mode-button active" aria-pressed="true"><span class="mode-dot"></span>Live</button><button id="replay-mode" class="mode-button" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5a5.5 5.5 0 1 1-.5 5M3 1v4h4"/></svg>Verified replay</button></div>
+    </section>
+
+    <div class="environment-strip"><span class="environment-tag">SIMULATION</span><span>2D warehouse <span class="muted-slash">/</span> CPU control <span class="muted-slash">/</span> No hardware or model inference</span><span class="runtime-target"><span id="target-hz">—</span> Hz target</span></div>
+    <div id="notice" class="notice" role="status"><span id="notice-title">Connecting to the local runtime.</span> <span id="notice-detail">The field stays empty until native telemetry arrives.</span></div>
+
+    <div class="workspace">
+      <section class="panel field-panel" aria-labelledby="field-heading">
+        <div class="panel-heading field-heading"><div><span class="section-number">01</span><h2 id="field-heading">Warehouse field</h2><span class="panel-label">TOP-DOWN / METERS</span></div><span id="field-source" class="source-tag">AWAITING DATA</span></div>
+        <div class="field-toolbar"><span class="field-dimensions" id="world-size">FIELD — × — m</span><div class="layer-controls" aria-label="Map layers"><label><input id="layer-path" type="checkbox" checked>Path</label><label><input id="layer-trace" type="checkbox" checked>Trace</label><label><input id="layer-lidar" type="checkbox" checked>LiDAR</label></div></div>
+        <div class="map-wrap" id="map-wrap">
+          <canvas id="field-canvas" role="img" aria-label="Warehouse simulation. Awaiting native telemetry.">The warehouse view requires canvas. Rover coordinates and control telemetry are also available below.</canvas>
+          <div class="map-empty" id="map-empty"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M9 17 24 9l15 8v15l-15 8-15-8V17Z"/><path d="m9 17 15 8 15-8M24 25v15"/></svg><strong>Waiting for native telemetry</strong><span>No sensor frame has been received.<br>The browser does not generate a simulation.</span></div>
+          <div class="map-corner top-left" aria-hidden="true"></div><div class="map-corner bottom-right" aria-hidden="true"></div>
+          <div class="map-stamp"><span class="stamp-cross">+</span> <span id="map-stamp">NATIVE SENSOR / PLANNER OUTPUT</span></div>
+          <div class="map-axis" aria-hidden="true"><span>Y ↑</span><span>X →</span></div>
+        </div>
+        <div class="map-legend" aria-label="Map legend"><span><i class="legend-rover"></i>Rover</span><span><i class="legend-path"></i>Planned path</span><span><i class="legend-trace"></i>Observed trail</span><span><i class="legend-obstacle"></i>Shelf</span><span><i class="legend-dynamic"></i>Dynamic obstacle</span><span class="legend-scale" id="field-tick">TICK —</span></div>
+        <div class="pose-strip"><div><span class="metric-label">POSITION X / Y</span><strong id="pose-position">— / — <small>m</small></strong></div><div><span class="metric-label">HEADING</span><strong id="pose-heading">— <small>rad</small></strong></div><div class="goal-metric"><span class="metric-label">MISSION GOAL</span><strong id="goal-label">Awaiting mission</strong></div><div><span class="metric-label">COMPLETED</span><strong id="goals-completed">— <small>goals</small></strong></div></div>
+      </section>
+
+      <aside class="sidebar" aria-label="Runtime and rover telemetry">
+        <section class="panel pipeline-panel" aria-labelledby="pipeline-heading">
+          <div class="panel-heading"><div><span class="section-number">02</span><h2 id="pipeline-heading">Copper pipeline</h2></div><span class="panel-label">CPU</span></div>
+          <div class="pipeline-summary"><span id="pipeline-state">Awaiting cycles</span><span><strong id="pipeline-us">—</strong> <span class="metric-unit">µs / cycle</span></span></div>
+          <ol class="pipeline-graph" aria-label="Copper control graph">
+            <li><span class="node-symbol">S</span><div><strong>Sim sensors</strong><span id="sensor-fields">Pose · obstacles</span></div><span class="node-state" id="node-sensors">—</span></li>
+            <li><span class="node-symbol">P</span><div><strong>Planner</strong><span>Collision-aware path</span></div><span class="node-state" id="node-planner">—</span></li>
+            <li><span class="node-symbol">C</span><div><strong>Safety controller</strong><span>Velocity · clearance</span></div><span class="node-state" id="node-controller">—</span></li>
+            <li><span class="node-symbol">T</span><div><strong>Telemetry</strong><span>Native record / replay</span></div><span class="node-state" id="node-telemetry">—</span></li>
+          </ol>
+          <div class="runtime-meta"><span>ENGINE <strong id="engine-version">Copper / —</strong></span><span>ARCH <strong id="architecture">—</strong></span></div>
+        </section>
+        <section class="panel telemetry-panel" aria-labelledby="telemetry-heading">
+          <div class="panel-heading"><div><span class="section-number">03</span><h2 id="telemetry-heading">Control telemetry</h2></div><span id="telemetry-source" class="panel-label">NO FRAME</span></div>
+          <div class="telemetry-grid"><div><span class="metric-label">LINEAR COMMAND</span><strong id="command-v">—<small>m/s</small></strong></div><div><span class="metric-label">ANGULAR COMMAND</span><strong id="command-omega">—<small>rad/s</small></strong></div><div><span class="metric-label">NEAREST OBSTACLE</span><strong id="clearance">—<small>m</small></strong></div><div><span class="metric-label">PLANNED PATH</span><strong id="path-count">—<small>points</small></strong></div></div>
+          <div class="safety-row"><span><span class="status-dot" id="safety-dot"></span><strong id="safety-state">Safety unknown</strong></span><span id="collision-count">— collisions</span></div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="panel replay-panel" aria-labelledby="replay-heading">
+      <div class="panel-heading replay-heading"><div><span class="section-number">04</span><h2 id="replay-heading">Record & replay</h2><span id="verification-badge" class="verification-badge">NATIVE COPPER LOG</span></div><div class="recording-controls"><label for="recording-select" class="sr-only">Recording</label><select id="recording-select" aria-label="Choose native recording"><option value="">No recordings yet</option></select><a id="download-log" class="download-link disabled" aria-disabled="true" tabindex="-1" download>Download log <span aria-hidden="true">↗</span></a></div></div>
+      <div class="replay-body"><div class="transport"><button id="replay-start" class="icon-button" disabled aria-label="First replay frame" title="First frame (Home)"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4v10M13 4 6 9l7 5Z"/></svg></button><button id="replay-play" class="play-button" disabled aria-label="Play verified replay" title="Play / pause (Space)"><svg id="play-icon" viewBox="0 0 18 18" aria-hidden="true"><path d="m6 3 9 6-9 6Z"/></svg></button><button id="replay-end" class="icon-button" disabled aria-label="Last replay frame" title="Last frame (End)"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M14 4v10M5 4l7 5-7 5Z"/></svg></button></div><div class="timeline"><div class="timeline-top"><span id="timeline-label">LIVE OBSERVATION</span><span id="timeline-position">Awaiting native cycles</span></div><div class="scrubber-wrap"><canvas id="timeline-canvas" aria-hidden="true"></canvas><label for="replay-scrub" class="sr-only">Replay frame; use arrow keys to step, Home for first, End for last</label><input id="replay-scrub" type="range" min="0" max="0" value="0" step="1" disabled aria-valuetext="No verified recording loaded"></div><div class="timeline-bottom"><span id="timeline-start">00:00.000</span><span id="replay-detail">Select Verified replay to inspect a native recording.</span><span id="timeline-end">—</span></div></div><label class="speed-control"><span class="sr-only">Replay playback speed</span><select id="replay-speed" aria-label="Replay playback speed" disabled><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label></div>
+      <div class="recording-meta"><span id="recording-meta">No native recording selected.</span><span class="keyboard-hint"><kbd>Space</kbd> play / pause <span>·</span> <kbd>←</kbd><kbd>→</kbd> frame</span></div>
+      <p id="replay-error" class="replay-error" role="alert" hidden></p>
+    </section>
+
+    <footer><p><strong>Admiral</strong> device lifecycle, OCI workloads & private pulls <span class="footer-separator">/</span> <strong>Copper</strong> control, record & replay</p><p id="runtime-footer">LOCAL SIMULATION <span>·</span> NO HARDWARE CONNECTED</p></footer>
+  </main>
+  <noscript><div class="noscript">JavaScript is required to display native Copper telemetry. No browser simulation is running.</div></noscript>
+</body>
+</html>

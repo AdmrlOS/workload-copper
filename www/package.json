@@ -1,0 +1,8 @@
+{
+  "name": "copper-mission-control-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test model.test.js"
+  }
+}

@@ -1,0 +1,14 @@
+.git
+__pycache__
+*.pyc
+.target
+.target-*
+target
+.cache
+.env*
+/data
+/runs
+/.validation
+/artifacts
+PUBLISHED.md
+admiral/applied-*.json
