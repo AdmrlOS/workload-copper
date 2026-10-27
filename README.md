@@ -1,6 +1,9 @@
 # Copper × Admiral: replayable autonomy on Jetson
 
 A hardware-free warehouse-rover demo packaged as one Linux ARM64 Admiral workload.
+
+For customer evaluation and private access, start with [the customer guide](docs/CUSTOMER_GUIDE.md).
+The historical deployment identifiers in `PUBLISHED.md` are operator provenance, not customer defaults.
 The rover's decisions run in **Copper 1.3.1**, not in browser animation code. A
 read-only mission-control UI displays the generated trajectory and verified replay.
 
