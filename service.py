@@ -10,7 +10,6 @@ from pathlib import Path
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, unquote
-import mimetypes
 import tarfile
 import tempfile
 import os
@@ -262,12 +261,23 @@ def make_server(state, recordings, web_root, host="0.0.0.0", port=8080):
                         shutil.copyfileobj(archive, self.wfile)
                     return
                 name = "index.html" if path == "/" else path.removeprefix("/")
-                if name not in {"index.html", "app.js", "model.js", "style.css", "assets/copper-logo.webp"}:
+                # Exact offline asset inventory: never serve by suffix or directory.
+                static_types = {
+                    "index.html": "text/html; charset=utf-8",
+                    "app.js": "text/javascript; charset=utf-8",
+                    "model.js": "text/javascript; charset=utf-8",
+                    "style.css": "text/css; charset=utf-8",
+                    "assets/copper-logo.webp": "image/webp",
+                    "assets/admiral-logo-ink.svg": "image/svg+xml",
+                    "assets/paper-tile.webp": "image/webp",
+                    "assets/Archivo.woff2": "font/woff2",
+                    "assets/IBMPlexMono-Regular.woff2": "font/woff2",
+                    "assets/IBMPlexMono-Medium.woff2": "font/woff2",
+                }
+                if name not in static_types:
                     return self.json_response(404, dict(error="not found"))
                 content = (web_root / name).read_bytes()
-                content_type = mimetypes.guess_type(name)[0] or "application/octet-stream"
-                if not content_type.startswith("image/"):
-                    content_type += "; charset=utf-8"
+                content_type = static_types[name]
                 self.response_headers(200, content_type, len(content))
                 self.end_headers()
                 self.wfile.write(content)

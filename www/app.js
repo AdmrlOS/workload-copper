@@ -296,7 +296,7 @@ function drawField() {
   const frame = currentFrame();
   if (!frame) {
     // Neutral crosshair texture, not an invented warehouse or sensor frame.
-    ctx.fillStyle = '#2a3535';
+    ctx.fillStyle = '#c9c4b8';
     for (let x = 20; x < width; x += 28) for (let y = 16; y < height; y += 28) ctx.fillRect(x, y, 1, 1);
     return;
   }
@@ -310,20 +310,20 @@ function drawField() {
   const top = (height - h) / 2;
   const X = (x) => left + x * scale;
   const Y = (y) => top + h - y * scale;
-  const font = 'Consolas, "Liberation Mono", monospace';
-  ctx.fillStyle = '#182021';
+  const font = '"IBM Plex Mono", monospace';
+  ctx.fillStyle = '#f7f5ef';
   ctx.fillRect(left, top, w, h);
   const grid = frame.world.width > 50 || frame.world.height > 50 ? 5 : 1;
   ctx.lineWidth = 1;
-  ctx.strokeStyle = '#283334';
+  ctx.strokeStyle = '#d7d2c2';
   ctx.beginPath();
   for (let x = 0; x <= frame.world.width; x += grid) { ctx.moveTo(X(x), top); ctx.lineTo(X(x), top + h); }
   for (let y = 0; y <= frame.world.height; y += grid) { ctx.moveTo(left, Y(y)); ctx.lineTo(left + w, Y(y)); }
   ctx.stroke();
-  ctx.strokeStyle = '#53615c';
+  ctx.strokeStyle = '#68655d';
   ctx.strokeRect(left, top, w, h);
   ctx.font = `8px ${font}`;
-  ctx.fillStyle = '#6f827e';
+  ctx.fillStyle = '#5c5a55';
   ctx.textAlign = 'center';
   const labelStep = frame.world.width > 20 ? 4 : 2;
   for (let x = 0; x <= frame.world.width; x += labelStep) ctx.fillText(String(x).padStart(2, '0'), X(x), top + h + 15);
@@ -336,23 +336,23 @@ function drawField() {
     const frames = store.mode === 'replay' ? store.replay.frames : store.history;
     const end = store.mode === 'replay' ? store.replayIndex : frames.length - 1;
     const stride = Math.max(1, Math.floor(end / 1200));
-    ctx.beginPath(); ctx.strokeStyle = '#73988b'; ctx.globalAlpha = .65; ctx.lineWidth = 1.3; ctx.setLineDash([3, 4]);
+    ctx.beginPath(); ctx.strokeStyle = '#68655d'; ctx.globalAlpha = .65; ctx.lineWidth = 1.3; ctx.setLineDash([3, 4]);
     for (let i = 0; i <= end; i += stride) { const pose = frames[i].robot; if (!i) ctx.moveTo(X(pose.x), Y(pose.y)); else ctx.lineTo(X(pose.x), Y(pose.y)); }
     ctx.lineTo(X(frame.robot.x), Y(frame.robot.y)); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
   }
   if (layers.lidar && frame.lidar.length) {
-    ctx.fillStyle = '#84a8a0'; ctx.globalAlpha = .55;
+    ctx.fillStyle = '#1f4ad0'; ctx.globalAlpha = .55;
     for (const point of frame.lidar) ctx.fillRect(X(point.x) - 1, Y(point.y) - 1, 2, 2);
     ctx.globalAlpha = 1;
   }
   frame.obstacles.forEach((obstacle, i) => {
     const x = X(obstacle.x), y = Y(obstacle.y + obstacle.h), ow = obstacle.w * scale, oh = obstacle.h * scale;
-    ctx.fillStyle = obstacle.dynamic ? '#443d2b' : '#2e3b3a';
-    ctx.strokeStyle = obstacle.dynamic ? '#c8a76b' : '#5b6b66';
+    ctx.fillStyle = obstacle.dynamic ? '#e5eafb' : '#d7d2c2';
+    ctx.strokeStyle = obstacle.dynamic ? '#121420' : '#68655d';
     ctx.lineWidth = 1;
     ctx.fillRect(x, y, ow, oh); ctx.strokeRect(x + .5, y + .5, ow - 1, oh - 1);
     if (!obstacle.dynamic) {
-      ctx.strokeStyle = '#41534d'; ctx.beginPath();
+      ctx.strokeStyle = '#a8a398'; ctx.beginPath();
       const horizontal = ow > oh;
       const extent = horizontal ? ow : oh;
       for (let offset = 10; offset < extent; offset += 12) {
@@ -361,42 +361,42 @@ function drawField() {
       }
       ctx.stroke();
     } else {
-      ctx.strokeStyle = '#b99c69'; ctx.beginPath();
+      ctx.strokeStyle = '#121420'; ctx.beginPath();
       ctx.moveTo(x + ow * .3, y + oh); ctx.lineTo(x + ow * .3, y + oh + 5);
       ctx.moveTo(x + ow * .7, y + oh); ctx.lineTo(x + ow * .7, y + oh + 5); ctx.stroke();
     }
     if (!mobile || obstacle.dynamic) {
       ctx.font = `7px ${font}`; ctx.textAlign = 'center';
-      ctx.fillStyle = obstacle.dynamic ? '#ddbd86' : '#a2b0a8';
+      ctx.fillStyle = obstacle.dynamic ? '#121420' : '#5c5a55';
       ctx.fillText(obstacle.dynamic ? 'FORKLIFT' : `SHELF ${String(i + 1).padStart(2, '0')}`, x + ow / 2, y - 7);
     }
   });
   if (layers.path && frame.path.length) {
-    ctx.beginPath(); ctx.strokeStyle = '#e7a16d'; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.strokeStyle = '#2152ee'; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     frame.path.forEach((p, i) => { if (!i) ctx.moveTo(X(p.x), Y(p.y)); else ctx.lineTo(X(p.x), Y(p.y)); });
     ctx.stroke();
-    ctx.fillStyle = '#f2bf94';
+    ctx.fillStyle = '#1f4ad0';
     for (const p of frame.path) { ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 2.4, 0, Math.PI * 2); ctx.fill(); }
   }
   if (frame.goal) {
     const gx = X(frame.goal.x), gy = Y(frame.goal.y);
-    ctx.strokeStyle = '#dca878'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.strokeStyle = '#2152ee'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
     ctx.beginPath(); ctx.arc(gx, gy, 11, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = '#e9b685'; ctx.beginPath(); ctx.moveTo(gx, gy - 4); ctx.lineTo(gx + 4, gy); ctx.lineTo(gx, gy + 4); ctx.lineTo(gx - 4, gy); ctx.closePath(); ctx.fill();
-    ctx.font = `${mobile ? 7 : 8}px ${font}`; ctx.fillStyle = '#dfb389';
+    ctx.fillStyle = '#2152ee'; ctx.beginPath(); ctx.moveTo(gx, gy - 4); ctx.lineTo(gx + 4, gy); ctx.lineTo(gx, gy + 4); ctx.lineTo(gx - 4, gy); ctx.closePath(); ctx.fill();
+    ctx.font = `${mobile ? 7 : 8}px ${font}`; ctx.fillStyle = '#1f4ad0';
     const alignLeft = gx < left + w * .7;
     ctx.textAlign = alignLeft ? 'left' : 'right';
     ctx.fillText(`GOAL / ${frame.goal.label.toUpperCase()}`, gx + (alignLeft ? 16 : -16), gy - 12);
   }
   const rx = X(frame.robot.x), ry = Y(frame.robot.y), radius = frame.robot.radius * scale;
-  ctx.strokeStyle = frame.safety_stop === true ? '#e9978a' : '#e9a778';
-  ctx.fillStyle = '#bd8054';
+  ctx.strokeStyle = frame.safety_stop === true ? '#c8402f' : '#121420';
+  ctx.fillStyle = '#2152ee';
   ctx.beginPath(); ctx.arc(rx, ry, radius, 0, Math.PI * 2); ctx.fill();
   ctx.lineWidth = 1.5; ctx.stroke();
   // The radius and yaw are native measurements; the small heading line is a glyph.
   ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx + Math.cos(frame.robot.yaw) * (radius + 11), ry - Math.sin(frame.robot.yaw) * (radius + 11)); ctx.stroke();
-  ctx.fillStyle = '#f4d0ad'; ctx.beginPath(); ctx.arc(rx, ry, Math.min(2, radius / 3), 0, Math.PI * 2); ctx.fill();
-  ctx.font = `7px ${font}`; ctx.textAlign = 'left'; ctx.fillStyle = '#e7b28c';
+  ctx.fillStyle = '#f2efe7'; ctx.beginPath(); ctx.arc(rx, ry, Math.min(2, radius / 3), 0, Math.PI * 2); ctx.fill();
+  ctx.font = `7px ${font}`; ctx.textAlign = 'left'; ctx.fillStyle = '#1f4ad0';
   const labelX = Math.min(left + w - 50, rx + radius + 9);
   ctx.fillText('ROVER', Math.max(left + 3, labelX), ry + radius + 12);
   ctx.restore();
@@ -407,19 +407,19 @@ function drawTimeline() {
   ctx.clearRect(0, 0, width, height);
   const frames = store.mode === 'replay' ? store.replay?.frames || [] : store.history;
   const y = height / 2;
-  ctx.fillStyle = '#37423f'; ctx.fillRect(0, y - 1, width, 2);
+  ctx.fillStyle = '#c9c4b8'; ctx.fillRect(0, y - 1, width, 2);
   if (!frames.length) return;
   const start = frames[0].time_s, end = frames.at(-1).time_s, duration = end - start;
-  ctx.fillStyle = store.mode === 'replay' ? '#7d6048' : '#506b60';
+  ctx.fillStyle = store.mode === 'replay' ? '#2152ee' : '#68655d';
   ctx.fillRect(0, y - 2, width, 4);
   const stride = Math.max(1, Math.floor(frames.length / Math.max(1, width / 3)));
   for (let i = 0; i < frames.length; i += stride) {
     const f = frames[i];
     const x = duration > 0 ? (f.time_s - start) / duration * (width - 8) + 4 : 4;
-    ctx.fillStyle = f.safety_stop === true ? '#e9978a' : '#778b80';
+    ctx.fillStyle = f.safety_stop === true ? '#c8402f' : '#68655d';
     ctx.fillRect(x, y - (f.safety_stop === true ? 7 : 4), 1, f.safety_stop === true ? 14 : 8);
     if (i > 0 && f.goals_completed !== null && f.goals_completed > frames[i - 1].goals_completed) {
-      ctx.fillStyle = '#e6ad7b'; ctx.fillRect(x - 1, y - 8, 3, 16);
+      ctx.fillStyle = '#2152ee'; ctx.fillRect(x - 1, y - 8, 3, 16);
     }
   }
 }
